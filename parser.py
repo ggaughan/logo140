@@ -33,14 +33,15 @@ parser = yacc.yacc()
     
     
 if __name__ == "__main__":
+    import ply.lex as lex
     # Build the parser
     parser = yacc.yacc()
 
     while True:
         try:
-            s = raw_input('calc > ')
+            s = raw_input('test > ')
         except EOFError:
             break
         if not s: continue
-        result = parser.parse(s)
+        result = parser.parse(s, lexer=lex.lex())
         print result    

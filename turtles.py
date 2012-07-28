@@ -44,7 +44,7 @@ class TurtleContext(object):
         
     
     def __unicode__(self):
-        return "parsed=(%s)\npending=(%s)" % (self.commands, self.pending_scripts)
+        return "parsed=(%s)\nnp=%s\npending=(%s)" % (self.commands, self.np, self.pending_scripts)
     
     def parse(self, s):
         new_commands = self.parser.parse(s, lexer=self.lexer)
@@ -66,6 +66,8 @@ class TurtleContext(object):
             op, args = command[0], command[1:]
             if op == 'fd':
                 self.turtle.forward(args[0])
+            elif op == 'bk':
+                self.turtle.backward(args[0])
             elif op == 'rt':
                 self.turtle.right(args[0])
             elif op == 'lt':
@@ -73,7 +75,7 @@ class TurtleContext(object):
             #todo etc.
             #todo else
         #else nothing to do
-        reactor.callLater(1, self.process)  #todo improve!
+        reactor.callLater(0.1, self.process)  #todo improve!
     
     def _demo(self):
         """test demo: temp - todo remove"""
@@ -103,7 +105,7 @@ if __name__ == "__main__":
     
     #tc1._demo()
     tc2._demo()   
-    tc1.parse('rt 105 fd 10 lt 55 bk 5')
+    tc1.parse('rt 105 fd 10 lt 55 fd 100 rt 90 bk 50')
     tc1.process()
 
     for tc in tcs:
@@ -111,3 +113,4 @@ if __name__ == "__main__":
         
 
     reactor.run()  #no need for tk mainloop
+    
