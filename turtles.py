@@ -38,6 +38,7 @@ class TurtleContext(object):
         #parsed
         self.commands = []  #program steps
         self.np = 0  #index to next program step
+        self.repeat_counters = deque()
         
         #action
         self.turtle = LogoTurtle(canvas)
@@ -59,6 +60,7 @@ class TurtleContext(object):
                 yield None
         return cooperate(repeat_coop())
     
+    
     def process(self):
         """Process the next command"""
         if self.np < len(self.commands):
@@ -77,19 +79,35 @@ class TurtleContext(object):
             elif op == 'repeat':
                 #todo
                 print "repeat todo: %s" % str(args)  
-                #and prevent callLater: stepping = False
                 #and after, call process
+                self.repeat_counters.append((args[0], self.np))  #push start
+            elif op == 'endrepeat':
+                print "endrepeat todo"
+                (counter, np) = self.repeat_counters.popleft()  #pop latest
+                counter -= 1
+                if counter > 0:
+                    self.repeat_counters.append((counter, np))  #push back
+                    self.np = np  #again
+                #todo else done
             #todo etc.
             else:
                 #todo
                 print "Unknown command"
             if stepping:
-                reactor.callLater(0.1, self.process)  #todo improve!
+                reactor.callLater(0.001, self.process)  #todo improve!
         #else nothing to do (until the next parse at least)
-    
+
+        
+    def _do_demo_repeat(self, N):
+        def repeat_coop():
+            for obj in xrange(N):
+                self.turtle.forward(10)
+                self.turtle.right(2)
+                yield None
+        return cooperate(repeat_coop())
     def _demo(self):
         """test demo: temp - todo remove"""
-        self.do_repeat(40)
+        self._do_demo_repeat(40)
     
     
 tcs = []    
@@ -106,16 +124,30 @@ if __name__ == "__main__":
     #create some demo turtles
     tc1 = TurtleContext(canvas)
     tc2 = TurtleContext(canvas)
+    tc3 = TurtleContext(canvas)
+    tc4 = TurtleContext(canvas)
+    tc5 = TurtleContext(canvas)
     tcs.append(tc1)
     tcs.append(tc2)
+    tcs.extend([tc3, tc4, tc5])
     
     tc1.turtle.pen(pencolor = 'blue')
-    tc1.turtle.pen(pencolor = 'red')
+    tc2.turtle.pen(pencolor = 'red')
+    tc3.turtle.pen(pencolor = 'green')
+    tc4.turtle.pen(pencolor = 'orange')
+    tc5.turtle.pen(pencolor = 'purple')
     tc2.turtle.left(180)
+    tc3.turtle.left(90)
+    tc4.turtle.left(270)
+    tc5.turtle.left(230)
     
     #tc1._demo()
-    tc2._demo()   
-    tc1.parse('rt 105 fd 10 lt 55 fd 100 rt 90 bk 50 repeat 2 [ fd 10 ]')  #will call process after
+    #tc2._demo()   
+    tc1.parse('rt 105 fd 10 lt 55 fd 100 rt 90 bk 50 repeat 30 [ fd 10 rt 3 ]')  #will call process after
+    tc2.parse('repeat 40[fd 6 rt 4]')  #will call process after
+    tc3.parse('repeat 40[fd 6 rt 4]')  #will call process after
+    tc4.parse('repeat 40[fd 6 rt 4]')  #will call process after
+    tc5.parse('repeat 40[fd 6 rt 4]')  #will call process after
 
     for tc in tcs:
         print unicode(tc)
