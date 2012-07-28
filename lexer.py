@@ -20,6 +20,8 @@ tokens = [
    'DIVIDE',
    'LPAREN',
    'RPAREN',
+   'LBRACKET',
+   'RBRACKET',
    'ID'] + list(reserved.values())
 
 # Regular expression rules for simple tokens
@@ -29,6 +31,8 @@ tokens = [
 #t_DIVIDE  = r'/'
 t_LPAREN  = r'\('
 t_RPAREN  = r'\)'
+t_LBRACKET  = r'\['
+t_RBRACKET  = r'\]'
 #todo better?
 literals = "+-*/"
 
@@ -43,7 +47,7 @@ t_ignore  = ' \t'
 
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
-    t.type = reserved.get(t.value,'ID')    # Check for reserved words  #todo make case insensitive
+    t.type = reserved.get(t.value.lower(), 'ID')    # Check for reserved words  #todo make case insensitive
     return t
 
 

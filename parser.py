@@ -14,8 +14,14 @@ def p_commands(p):
         p[0] = [p[1]]
 
 def p_command(p):
-    'command : movement'
+    '''command : movement
+               | repeat
+    '''
     p[0] = p[1]   
+    
+def p_repeat(p):
+    'repeat : REPEAT NUMBER LBRACKET commands RBRACKET'
+    p[0] = (p[1], p[2], p[4])
     
 def p_movement(p):
     'movement : movement_type NUMBER'
@@ -29,6 +35,10 @@ def p_movement_type(p):
     '''
     p[0] = p[1]
 
+def p_error(p):
+    print "Syntax error in input!"    
+    yacc.restart()
+    
 parser = yacc.yacc()
     
     

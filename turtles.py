@@ -49,6 +49,7 @@ class TurtleContext(object):
     def parse(self, s):
         new_commands = self.parser.parse(s, lexer=self.lexer)
         self.commands.extend(new_commands)
+        self.process()
     
     def do_repeat(self, N):
         def repeat_coop():
@@ -63,6 +64,7 @@ class TurtleContext(object):
         if self.np < len(self.commands):
             command = self.commands[self.np]
             self.np += 1
+            stepping = True  #temp
             op, args = command[0], command[1:]
             if op == 'fd':
                 self.turtle.forward(args[0])
@@ -72,10 +74,18 @@ class TurtleContext(object):
                 self.turtle.right(args[0])
             elif op == 'lt':
                 self.turtle.left(args[0])
+            elif op == 'repeat':
+                #todo
+                print "repeat todo: %s" % str(args)  
+                #and prevent callLater: stepping = False
+                #and after, call process
             #todo etc.
-            #todo else
-        #else nothing to do
-        reactor.callLater(0.1, self.process)  #todo improve!
+            else:
+                #todo
+                print "Unknown command"
+            if stepping:
+                reactor.callLater(0.1, self.process)  #todo improve!
+        #else nothing to do (until the next parse at least)
     
     def _demo(self):
         """test demo: temp - todo remove"""
@@ -105,8 +115,7 @@ if __name__ == "__main__":
     
     #tc1._demo()
     tc2._demo()   
-    tc1.parse('rt 105 fd 10 lt 55 fd 100 rt 90 bk 50')
-    tc1.process()
+    tc1.parse('rt 105 fd 10 lt 55 fd 100 rt 90 bk 50 repeat 2 [ fd 10 ]')  #will call process after
 
     for tc in tcs:
         print unicode(tc)
