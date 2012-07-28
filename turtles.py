@@ -104,7 +104,6 @@ class TurtleContext(object):
             elif op == 'repeat':
                 self.repeat_counters.append((args[0], self.np))  #push start
             elif op == 'endrepeat':
-                print "endrepeat todo"
                 (counter, np) = self.repeat_counters.pop()  #pop latest
                 counter -= 1
                 if counter > 0:
@@ -185,44 +184,54 @@ if __name__ == "__main__":
     tc3 = TurtleContext(canvas)
     tc4 = TurtleContext(canvas)
     tc5 = TurtleContext(canvas)
+    tc6 = TurtleContext(canvas)
+    tc7 = TurtleContext(canvas)
+    tc8 = TurtleContext(canvas)
+    tc9 = TurtleContext(canvas)
+    tc10 = TurtleContext(canvas)
     tcs.append(tc1)
     tcs.append(tc2)
     tcs.extend([tc3, tc4, tc5])
+    tcs.extend([tc6, tc7, tc8, tc9, tc10])
     
     tc1.turtle.pen(pencolor = 'blue')
     tc2.turtle.pen(pencolor = 'red')
     tc3.turtle.pen(pencolor = 'green')
     tc4.turtle.pen(pencolor = 'orange')
     tc5.turtle.pen(pencolor = 'purple')
+    tc6.turtle.pen(pencolor = 'blue')
+    tc7.turtle.pen(pencolor = 'red')
+    tc8.turtle.pen(pencolor = 'green')
+    tc9.turtle.pen(pencolor = 'orange')
+    tc10.turtle.pen(pencolor = 'purple')
     tc2.turtle.left(180)
     tc3.turtle.left(90)
     tc4.turtle.left(270)
     tc5.turtle.left(230)
+    tc7.turtle.left(130)
+    tc8.turtle.left(40)
+    tc9.turtle.left(220)
+    tc10.turtle.left(190)
     
     tc1.parse('to square repeat 4 [fd 50 rt 90] end')
 
     tc1.parse('repeat 36 [ square rt 10] ')
     
-    #tc1.parse('repeat 100 [fd 0]')  #busy
-    #tc2.parse('repeat 50 [fd 0]') #busy
-    #tc3.parse('repeat 200 [fd 0]') #busy
-    
     #tc1._demo()
     #tc2._demo()   
-    #tc1.parse('rt 105 fd 10 lt 55 fd 100 rt 90 bk 50 repeat 30 [ fd 10 rt 3 ]')  #will call process after
-    
-    #tc1.parse('repeat 90[fd 6 rt 4]')  #will call process after
-    #tc2.parse('repeat 90[fd 6 rt 4]')  #will call process after
-    #tc3.parse('repeat 90[fd 6 rt 4]')  #will call process after
-    ##tc4.parse('repeat 90[fd 6 rt 4]')  #will call process after
     
     s= 'repeat 20 [repeat 90[fd 6 rt 4] rt 5]'  #nested repeat
     tc1.parse(s)
     tc2.parse(s)
     tc3.parse(s)
     tc4.parse(s)
+    tc5.parse(s)
+    tc6.parse(s)
+    tc7.parse(s)
+    tc8.parse(s)
+    tc9.parse(s)
+    tc10.parse(s)
     
-    ##tc5.parse('repeat 40[fd 6 rt 4]')  #will call process after
 
     for tc in tcs:
         print unicode(tc)
