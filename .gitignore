@@ -1,5 +1,9 @@
 *.py[co]
 
+include
+lib
+local
+
 # Packages
 *.egg
 *.egg-info
