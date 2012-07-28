@@ -219,10 +219,16 @@ if __name__ == "__main__":
     tc9.turtle.left(220)
     tc10.turtle.left(190)
     
-    tc1.parse('to square repeat 4 [fd 50 rt 90 square] end')  #note: recursive, not implemented yet: will be ignored
+    tc1.parse('to square repeat 4 [fd 50 rt 90] end')
 
-    tc1.parse('repeat 36 [ square rt 10] ')
+    #note: recursive functions not implemented yet and any will be ignored
+
+    #tc1.parse('repeat 36 [ square rt 10] ')
     
+    tc1.parse('to flower repeat 36 [rt 10 square] end')
+    
+    tc1.parse('flower')  #nested function call
+
     #tc1._demo()
     #tc2._demo()   
     

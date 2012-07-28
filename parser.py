@@ -39,8 +39,8 @@ def p_command(p):
             else:
                 #todo if we're inside a TO definition with this name then allow this recursive call too
                 #- it will then be resolved ok at runtime
-                print 'Unknown function: %s' % p[1]
-                raise SyntaxError('Unknown function: %s' % p[1])
+                print "I don't know how to %s" % p[1]
+                raise SyntaxError("I don't know how to %s" % p[1])
     else:
         p[0] = p[1]
     
@@ -71,7 +71,7 @@ def p_movement_type(p):
     p[0] = p[1]
 
 def p_error(p):
-    print "Syntax error in input!"    
+    print "Syntax error in input! %s" % p
     yacc.restart()
     
 parser = yacc.yacc()
