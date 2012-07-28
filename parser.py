@@ -28,17 +28,27 @@ def p_commands(p):
 def p_command(p):
     '''command : movement
                | repeat
+               | to
+               | NS_ID
     '''
-    p[0] = p[1]   
+    if isinstance(p[1], basestring):
+        p[0] = ('call', p[1])  #standalone, known-name is a call
+    else:
+        p[0] = p[1]
     
 def p_repeat(p):
     'repeat : REPEAT NUMBER LBRACKET commands RBRACKET'
-    #p[0] = (p[1], p[2], p[4])
     #todo handle missing NUMBER syntax error
     p[0] = [(p[1], p[2])]
     p[0].extend(p[4])
     p[0].append(('endrepeat', None))
 
+def p_to(p):
+    'to : TO ID commands END'
+    p[0] = [(p[1], p[2])]
+    p[0].extend(p[3])
+    p[0].append(('endto', None))
+    
     
 def p_movement(p):
     'movement : movement_type NUMBER'

@@ -27,6 +27,7 @@ class LogoTurtle(turtle.RawTurtle):
         super(LogoTurtle, self).__init__(canvas, **kwargs)
         self.speed(TURTLE_SPEED)
         self.shape("turtle")
+
         
 class TurtleContext(object):
     """Process (turtle/user) information
@@ -37,7 +38,16 @@ class TurtleContext(object):
         #incoming
         self.pending_scripts = deque([])  #stuff still to be parsed
         self.lexer = lex.lex(module=lexer)
+        self.lexer.context = self  #reverse reference, so lexer can access current namespaces
         self.parser = parser.parser
+
+        #namespaces
+        self.namespace = deque()
+        self.namespace.append({})  #globals  #todo complete
+        self.namespace.append({})  #locals  #function locals will be added and removed at runtime
+
+        #stack frames
+        self.stack = deque()
         
         #parsed
         self.commands = []  #program steps
@@ -50,6 +60,14 @@ class TurtleContext(object):
     
     def __unicode__(self):
         return "parsed=(%s)\nnp=%s\npending=(%s)" % (self.commands, self.np, self.pending_scripts)
+    
+    def namespace_lookup(self, name):
+        """Find which namespace the name is in, starting with locals first then working outwards
+           return None if not found
+        """
+        for ns in self.namespace:
+            if name in ns:
+                return ns
     
     def parse(self, s):
         new_commands = self.parser.parse(s, lexer=self.lexer)
@@ -64,6 +82,9 @@ class TurtleContext(object):
                 #yield None
         #return cooperate(repeat_coop())
     
+    def calling(self):
+        """Returns True if we are currently in a function call"""
+        return len(self.stack) > 0
     
     def process(self):
         """Process the next command"""
@@ -89,7 +110,38 @@ class TurtleContext(object):
                 if counter > 0:
                     self.repeat_counters.append((counter, np))  #push back
                     self.np = np  #again
-                #todo else done
+                #else done, continue
+            elif op == 'to':
+                self.namespace[0][args[0]] = self.np  #declare name + start point in locals (assumes name is lowercased already)
+                #todo store args too! so parser can check/greedy calls
+                #find corresponding endto and jump over it
+                endto_p = self.np
+                depth = 1
+                for c in self.commands[self.np:]:
+                    endto_p += 1
+                    if c[0] == 'to':
+                        depth += 1  #handle nested to
+                    if c[0] == 'endto':
+                        depth -= 1
+                        if depth == 0:
+                            self.np = endto_p
+                            break
+            elif op == 'endto':
+                if self.calling():
+                    (name, np) = self.stack.pop()  #pop local stack frame
+                    self.namespace.pop()  #pop local namespace
+                    self.np = np  #restore np
+                #else nop, i.e. pass over end of definition
+            elif op == 'call':
+                #note: any nested tos will be dealt with within (same level only - further inners will be jumped over)
+                ns = self.lexer.context.namespace_lookup(args[0])   #(assumes name is lowercased already)
+                if ns is not None:
+                    self.stack.append((args[0], self.np))  #push local stack frame
+                    self.namespace.append({})  #create local namespace
+                    #todo pass args to function via local namespace
+                    self.np = ns[args[0]]  #jump to function
+                #todo else runtime error: lexer found function but no longer there (scope issue?)
+                    
             #todo etc.
             else:
                 #todo
@@ -146,7 +198,11 @@ if __name__ == "__main__":
     tc3.turtle.left(90)
     tc4.turtle.left(270)
     tc5.turtle.left(230)
+    
+    tc1.parse('to square repeat 4 [fd 50 rt 90] end')
 
+    tc1.parse('repeat 36 [ square rt 10] ')
+    
     #tc1.parse('repeat 100 [fd 0]')  #busy
     #tc2.parse('repeat 50 [fd 0]') #busy
     #tc3.parse('repeat 200 [fd 0]') #busy
