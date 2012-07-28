@@ -56,13 +56,13 @@ class TurtleContext(object):
         self.commands.extend(new_commands)
         self.process()
     
-    def do_repeat(self, N):
-        def repeat_coop():
-            for obj in xrange(N):
-                self.turtle.forward(10)
-                self.turtle.right(2)
-                yield None
-        return cooperate(repeat_coop())
+    #def do_repeat(self, N):
+        #def repeat_coop():
+            #for obj in xrange(N):
+                #self.turtle.forward(10)
+                #self.turtle.right(2)
+                #yield None
+        #return cooperate(repeat_coop())
     
     
     def process(self):
@@ -99,29 +99,34 @@ class TurtleContext(object):
         #else nothing to do (until the next parse at least)
 
         
-    def _do_demo_repeat(self, N):
-        def repeat_coop():
-            for obj in xrange(N):
-                self.turtle.forward(10)
-                self.turtle.right(2)
-                yield None
-        return cooperate(repeat_coop())
-    def _demo(self):
-        """test demo: temp - todo remove"""
-        self._do_demo_repeat(40)
+    #def _do_demo_repeat(self, N):
+        #def repeat_coop():
+            #for obj in xrange(N):
+                #self.turtle.forward(10)
+                #self.turtle.right(2)
+                #yield None
+        #return cooperate(repeat_coop())
+    #def _demo(self):
+        #"""test demo: temp - todo remove"""
+        #self._do_demo_repeat(40)
     
     
 tcs = []    
-    
-if __name__ == "__main__":
+
+def setup_window(title = "Turtles"):
     #setup canvas and make it play nicely with Twisted
     root = Tkinter.Tk() 
     canvas = Tkinter.Canvas(root,width=600,height=600)
     canvas.pack(side = Tkinter.LEFT)
     tksupport.install(root)
     root.protocol('WM_DELETE_WINDOW', reactor.stop)
-    root.title("Logo140 - Leeds Hack 2012")
+    root.title(title)
+    return canvas
 
+
+if __name__ == "__main__":
+    canvas = setup_window("Logo140 - Leeds Hack 2012")
+    
     #create some demo turtles
     tc1 = TurtleContext(canvas)
     tc2 = TurtleContext(canvas)
@@ -141,6 +146,10 @@ if __name__ == "__main__":
     tc3.turtle.left(90)
     tc4.turtle.left(270)
     tc5.turtle.left(230)
+
+    #tc1.parse('repeat 100 [fd 0]')  #busy
+    #tc2.parse('repeat 50 [fd 0]') #busy
+    #tc3.parse('repeat 200 [fd 0]') #busy
     
     #tc1._demo()
     #tc2._demo()   
