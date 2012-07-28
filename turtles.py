@@ -43,13 +43,30 @@ class TurtleContext(object):
     def __unicode__(self):
         return "pending=(%s)" % (self.pending_scripts)
     
+    def parse(self, s):
+        self.lexer.input(s)
+        while True:
+            tok = self.lexer.token()
+            if not tok: break      # No more input
+            self.commands.append(tok)  #todo yacc instead!
+    
     def do_repeat(self, N):
         def repeat_coop():
             for obj in xrange(N):
                 self.turtle.forward(10)
                 self.turtle.right(2)
                 yield None
-        return cooperate(repeat_coop())    
+        return cooperate(repeat_coop())
+    
+    def process(self):
+        """Process the next command"""
+        if self.np < len(self.commands):
+            command = self.commands[self.np]
+            self.np += 1
+            if command.type == 'FORWARD':
+                self.turtle.forward(20)
+            #todo else
+        #else nothing to do
     
     def _demo(self):
         """test demo: temp - todo remove"""
@@ -79,6 +96,8 @@ if __name__ == "__main__":
     
     tc1._demo()
     tc2._demo()   
+    tc1.parse('fd 10')
+    tc1.process()
 
     for tc in tcs:
         print unicode(tc)

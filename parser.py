@@ -4,6 +4,7 @@
 
 reserved = {
    'repeat' : 'REPEAT',
+   'fd': 'FORWARD',
    #etc
 }
 
