@@ -9,6 +9,11 @@ from collections import deque
 
 from twisted.internet import reactor
 from twisted.internet.task import cooperate
+from twisted.internet import tksupport
+
+import ply.lex as lex
+
+import parser
 
 class LogoTurtle(turtle.RawTurtle):
     """Wrapper around turtle
@@ -23,10 +28,17 @@ class TurtleContext(object):
     def __init__(self, canvas=None, **kwargs):
         super(TurtleContext, self).__init__(**kwargs)
         
-        self.turtle = LogoTurtle(canvas)
+        #incoming
         self.pending_scripts = deque([])  #stuff still to be parsed
+        self.lexer = lex.lex(module=parser)
+        
+        #parsed
         self.commands = []  #program steps
         self.np = 0  #index to next program step
+        
+        #action
+        self.turtle = LogoTurtle(canvas)
+        
     
     def __unicode__(self):
         return "pending=(%s)" % (self.pending_scripts)
@@ -47,12 +59,15 @@ class TurtleContext(object):
 tcs = []    
     
 if __name__ == "__main__":
+    #setup canvas and make it play nicely with Twisted
     root = Tkinter.Tk() 
     canvas = Tkinter.Canvas(root,width=600,height=600)
     canvas.pack(side = Tkinter.LEFT)
-    root.protocol('WM_DELETE_WINDOW', reactor.stop)  #todo fix!
+    tksupport.install(root)
+    root.protocol('WM_DELETE_WINDOW', reactor.stop)
     root.title("Logo140 - Leeds Hack 2012")
 
+    #create some demo turtles
     tc1 = TurtleContext(canvas)
     tc2 = TurtleContext(canvas)
     tcs.append(tc1)
@@ -61,14 +76,12 @@ if __name__ == "__main__":
     tc1.turtle.pen(pencolor = 'blue')
     tc1.turtle.pen(pencolor = 'red')
     tc2.turtle.left(180)
-    tc1._demo()
-    tc2._demo()
     
-    #turtle.mainloop()
+    tc1._demo()
+    tc2._demo()   
 
     for tc in tcs:
         print unicode(tc)
         
 
-    reactor.run()        
-    
+    reactor.run()  #no need for tk mainloop
