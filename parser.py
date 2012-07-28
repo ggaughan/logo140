@@ -29,10 +29,18 @@ def p_command(p):
     '''command : movement
                | repeat
                | to
-               | NS_ID
+               | ID
     '''
-    if isinstance(p[1], basestring):
-        p[0] = ('call', p[1])  #standalone, known-name is a call
+    if isinstance(p[1], basestring): #ID
+        if hasattr(p.lexer, 'context'):
+            ns = p.lexer.context.namespace_lookup(p[1].lower())
+            if ns is not None:
+                p[0] = ('call', p[1])  #standalone, known-name is a call  #todo we could add ns/lookup info here
+            else:
+                #todo if we're inside a TO definition with this name then allow this recursive call too
+                #- it will then be resolved ok at runtime
+                print 'Unknown function: %s' % p[1]
+                raise SyntaxError('Unknown function: %s' % p[1])
     else:
         p[0] = p[1]
     

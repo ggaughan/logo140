@@ -17,6 +17,7 @@ import ply.yacc as yacc
 import lexer
 import parser
 
+MAX_RECURSION = 5
 TURTLE_SPEED = 10  #1=slowest, 10=fast (0=no anim = fastest)
 
 class LogoTurtle(turtle.RawTurtle):
@@ -71,8 +72,10 @@ class TurtleContext(object):
     
     def parse(self, s):
         new_commands = self.parser.parse(s, lexer=self.lexer)
-        self.commands.extend(new_commands)
-        self.process()
+        if new_commands is not None:
+            self.commands.extend(new_commands)
+            self.process()
+        #else possibly syntax error
     
     #def do_repeat(self, N):
         #def repeat_coop():
@@ -135,10 +138,13 @@ class TurtleContext(object):
                 #note: any nested tos will be dealt with within (same level only - further inners will be jumped over)
                 ns = self.lexer.context.namespace_lookup(args[0])   #(assumes name is lowercased already)
                 if ns is not None:
-                    self.stack.append((args[0], self.np))  #push local stack frame
-                    self.namespace.append({})  #create local namespace
-                    #todo pass args to function via local namespace
-                    self.np = ns[args[0]]  #jump to function
+                    if len(self.stack) > MAX_RECURSION:
+                        print "Maximum stack reached - call will be ignored (%s)" % unicode(self)
+                    else:
+                        self.stack.append((args[0], self.np))  #push local stack frame
+                        self.namespace.append({})  #create local namespace
+                        #todo pass args to function via local namespace
+                        self.np = ns[args[0]]  #jump to function
                 #todo else runtime error: lexer found function but no longer there (scope issue?)
                     
             #todo etc.
@@ -213,7 +219,7 @@ if __name__ == "__main__":
     tc9.turtle.left(220)
     tc10.turtle.left(190)
     
-    tc1.parse('to square repeat 4 [fd 50 rt 90] end')
+    tc1.parse('to square repeat 4 [fd 50 rt 90 square] end')
 
     tc1.parse('repeat 36 [ square rt 10] ')
     

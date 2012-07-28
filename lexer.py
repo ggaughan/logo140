@@ -51,11 +51,6 @@ t_ignore  = ' \t'
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
     t.type = reserved.get(t.value.lower(), 'ID')    # Check for reserved words  #todo make case insensitive
-    if hasattr(t.lexer, 'context'):
-        ns = t.lexer.context.namespace_lookup(t.value.lower())
-        if ns is not None:
-            t.type = 'NS_ID'
-        
     return t
 
 
