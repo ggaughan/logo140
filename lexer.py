@@ -5,6 +5,9 @@
 reserved = {
    'repeat' : 'REPEAT',
    'fd': 'FORWARD',
+   'bk': 'BACKWARD',
+   'lt': 'LEFT',
+   'rt': 'RIGHT',
    #etc
 }
 

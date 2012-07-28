@@ -24,6 +24,8 @@ def p_movement(p):
 def p_movement_type(p):
     '''movement_type : FORWARD
                      | BACKWARD
+                     | RIGHT
+                     | LEFT
     '''
     p[0] = p[1]
 

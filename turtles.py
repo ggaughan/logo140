@@ -7,12 +7,14 @@ import Tkinter
 
 from collections import deque
 
-from twisted.internet import reactor
+from twisted.internet import reactor, defer
 from twisted.internet.task import cooperate
 from twisted.internet import tksupport
 
 import ply.lex as lex
+import ply.yacc as yacc
 
+import lexer
 import parser
 
 class LogoTurtle(turtle.RawTurtle):
@@ -30,7 +32,8 @@ class TurtleContext(object):
         
         #incoming
         self.pending_scripts = deque([])  #stuff still to be parsed
-        self.lexer = lex.lex(module=parser)
+        self.lexer = lex.lex(module=lexer)
+        self.parser = parser.parser
         
         #parsed
         self.commands = []  #program steps
@@ -41,14 +44,11 @@ class TurtleContext(object):
         
     
     def __unicode__(self):
-        return "pending=(%s)" % (self.pending_scripts)
+        return "parsed=(%s)\npending=(%s)" % (self.commands, self.pending_scripts)
     
     def parse(self, s):
-        self.lexer.input(s)
-        while True:
-            tok = self.lexer.token()
-            if not tok: break      # No more input
-            self.commands.append(tok)  #todo yacc instead!
+        new_commands = self.parser.parse(s, lexer=self.lexer)
+        self.commands.extend(new_commands)
     
     def do_repeat(self, N):
         def repeat_coop():
@@ -63,10 +63,17 @@ class TurtleContext(object):
         if self.np < len(self.commands):
             command = self.commands[self.np]
             self.np += 1
-            if command.type == 'FORWARD':
-                self.turtle.forward(20)
+            op, args = command[0], command[1:]
+            if op == 'fd':
+                self.turtle.forward(args[0])
+            elif op == 'rt':
+                self.turtle.right(args[0])
+            elif op == 'lt':
+                self.turtle.left(args[0])
+            #todo etc.
             #todo else
         #else nothing to do
+        reactor.callLater(1, self.process)  #todo improve!
     
     def _demo(self):
         """test demo: temp - todo remove"""
@@ -94,9 +101,9 @@ if __name__ == "__main__":
     tc1.turtle.pen(pencolor = 'red')
     tc2.turtle.left(180)
     
-    tc1._demo()
+    #tc1._demo()
     tc2._demo()   
-    tc1.parse('fd 10')
+    tc1.parse('rt 105 fd 10 lt 55 bk 5')
     tc1.process()
 
     for tc in tcs:
