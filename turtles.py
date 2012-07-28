@@ -17,12 +17,16 @@ import ply.yacc as yacc
 import lexer
 import parser
 
+TURTLE_SPEED = 10  #1=slowest, 10=fast (0=no anim = fastest)
+
 class LogoTurtle(turtle.RawTurtle):
     """Wrapper around turtle
        In future, this could be swapped out to render elsewhere...
     """
     def __init__(self, canvas, **kwargs):
         super(LogoTurtle, self).__init__(canvas, **kwargs)
+        self.speed(TURTLE_SPEED)
+        self.shape("turtle")
         
 class TurtleContext(object):
     """Process (turtle/user) information
@@ -77,13 +81,10 @@ class TurtleContext(object):
             elif op == 'lt':
                 self.turtle.left(args[0])
             elif op == 'repeat':
-                #todo
-                print "repeat todo: %s" % str(args)  
-                #and after, call process
                 self.repeat_counters.append((args[0], self.np))  #push start
             elif op == 'endrepeat':
                 print "endrepeat todo"
-                (counter, np) = self.repeat_counters.popleft()  #pop latest
+                (counter, np) = self.repeat_counters.pop()  #pop latest
                 counter -= 1
                 if counter > 0:
                     self.repeat_counters.append((counter, np))  #push back
@@ -94,7 +95,7 @@ class TurtleContext(object):
                 #todo
                 print "Unknown command"
             if stepping:
-                reactor.callLater(0.001, self.process)  #todo improve!
+                reactor.callLater(0.00001, self.process)  #todo improve!
         #else nothing to do (until the next parse at least)
 
         
@@ -143,11 +144,20 @@ if __name__ == "__main__":
     
     #tc1._demo()
     #tc2._demo()   
-    tc1.parse('rt 105 fd 10 lt 55 fd 100 rt 90 bk 50 repeat 30 [ fd 10 rt 3 ]')  #will call process after
-    tc2.parse('repeat 40[fd 6 rt 4]')  #will call process after
-    tc3.parse('repeat 40[fd 6 rt 4]')  #will call process after
-    tc4.parse('repeat 40[fd 6 rt 4]')  #will call process after
-    tc5.parse('repeat 40[fd 6 rt 4]')  #will call process after
+    #tc1.parse('rt 105 fd 10 lt 55 fd 100 rt 90 bk 50 repeat 30 [ fd 10 rt 3 ]')  #will call process after
+    
+    #tc1.parse('repeat 90[fd 6 rt 4]')  #will call process after
+    #tc2.parse('repeat 90[fd 6 rt 4]')  #will call process after
+    #tc3.parse('repeat 90[fd 6 rt 4]')  #will call process after
+    ##tc4.parse('repeat 90[fd 6 rt 4]')  #will call process after
+    
+    s= 'repeat 20 [repeat 90[fd 6 rt 4] rt 5]'  #nested repeat
+    tc1.parse(s)
+    tc2.parse(s)
+    tc3.parse(s)
+    tc4.parse(s)
+    
+    ##tc5.parse('repeat 40[fd 6 rt 4]')  #will call process after
 
     for tc in tcs:
         print unicode(tc)
