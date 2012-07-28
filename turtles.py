@@ -17,6 +17,9 @@ import ply.yacc as yacc
 import lexer
 import parser
 
+import boto
+import json
+
 TURTLE_SPEED = 10  #1=slowest, 10=fast (0=no anim = fastest)
 
 class LogoTurtle(turtle.RawTurtle):
@@ -123,6 +126,15 @@ def setup_window(title = "Turtles"):
     root.title(title)
     return canvas
 
+def get_sms():
+    m_data = []
+    sqs = boto.connect_sqs()
+    q = sqs.get_queue('logo140')
+    m = q.read()
+    if m:
+        m_data = m.get_body()
+        m.delete()
+    return m_data
 
 if __name__ == "__main__":
     canvas = setup_window("Logo140 - Leeds Hack 2012")
