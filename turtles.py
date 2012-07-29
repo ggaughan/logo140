@@ -22,7 +22,7 @@ import boto
 import json
 
 MAX_RECURSION = 5
-TURTLE_SPEED = 10  #1=slowest, 10=fast (0=no anim = fastest)
+TURTLE_SPEED = 5  #1=slowest, 10=fast (0=no anim = fastest)
 
 class LogoTurtle(turtle.RawTurtle):
     """Wrapper around turtle
@@ -210,37 +210,46 @@ def setup_window(title = "Turtles"):
     root.title(title)
     return canvas
 
-def get_sms():
-    m_data = []
-    sqs = boto.connect_sqs()
-    q = sqs.get_queue('logo140')
-    m = q.read()
-    if m:
-        m_data = m.get_body()
-        m.delete()
-    return m_data
 
-def dispatcher():
-    sms = get_sms()
-    
-    if sms:
-        sms_id = ''        
-        o = json.loads(sms)
-        try:
-            sms_id = o.get('from')[0]
-        except IndexError:
-            pass
-    
-        turtle = tcs.get(sms_id)
-        content = ' '.join(o.get('content'))
+
+class Dispatcher(object):
+
+    def __init__(self, **kwargs):
+        self.sqs = boto.connect_sqs()
         
-        if turtle:
-            turtle.parse(content)
-        else:
-            tc = TurtleContext(canvas)
-            tc.parse(content)
-            tcs.update({sms_id: tc})
-    print '*'*50, tcs
+    def get_sms(self):
+        m_data = []
+        q = self.sqs.get_queue('logo140')
+        m = q.read()
+        if m:
+            m_data = m.get_body()
+            m.delete()
+        return m_data 
+    
+    def dispatcher(self):
+        sms = self.get_sms()
+        
+        if sms:
+            sms_id = ''        
+            o = json.loads(sms)
+            try:
+                sms_id = o.get('from')[0]
+            except IndexError:
+                pass
+        
+            turtle = tcs.get(sms_id)
+            content = ' '.join(o.get('content'))
+            
+            if turtle:
+                turtle.parse(content)
+            else:
+                tc = TurtleContext(canvas)
+                tc.parse(content)
+                tcs.update({sms_id: tc})
+        
+       
+        
+        
                 
 if __name__ == "__main__":
     canvas = setup_window("Logo140 - Leeds Hack 2012")
@@ -328,8 +337,9 @@ if __name__ == "__main__":
 
     for tc in tcs:
         print unicode(tc)
-
-    l = LoopingCall(dispatcher)
+    
+    dispatcher = Dispatcher()
+    l = LoopingCall(dispatcher.dispatcher)
     l.start(5.0)        
 
     reactor.run()  #no need for tk mainloop
