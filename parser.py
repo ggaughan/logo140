@@ -91,7 +91,7 @@ def p_movement_type(p):
     p[0] = p[1]
 
 def p_error(p):
-    print "Syntax error in input! %s (%s)" % (p, p.lexer.context.parsing)
+    print "Syntax error in input! %s" % (p)
     yacc.restart()
     
 parser = yacc.yacc()
