@@ -226,6 +226,44 @@ def dispatcher():
 if __name__ == "__main__":
     canvas = setup_window("Logo140 - Leeds Hack 2012")
 
+    tutorTurtle = TurtleContext(canvas)
+    tutorTurtle.turtle.penup()
+    tutorTurtle.turtle.goto(-395,240)
+    tutorTurtle.turtle.write("Commands:", 
+                             True, align="left", font=("Arial", 12, "italic bold"))
+    
+    tutorTurtle.turtle.goto(-380,220)
+    tutorTurtle.turtle.write("FD n  LT n  RT n  BK n  HOME",
+                             True, align="left", font=("Arial", 12, "normal"))
+    tutorTurtle.turtle.goto(-380,200)
+    tutorTurtle.turtle.write("REPEAT n [", 
+                             True, align="left", font=("Arial", 12, "normal"))
+    tutorTurtle.turtle.write(" commands ", 
+                             True, align="left", font=("Arial", 12, "italic"))    
+    tutorTurtle.turtle.write("]", 
+                             True, align="left", font=("Arial", 12, "normal"))
+    tutorTurtle.turtle.goto(-380,180)
+    tutorTurtle.turtle.write("TO", 
+                             True, align="left", font=("Arial", 12, "normal"))
+    tutorTurtle.turtle.write(" x ", 
+                             True, align="left", font=("Arial", 12, "bold"))    
+    tutorTurtle.turtle.write(" commands ", 
+                             True, align="left", font=("Arial", 12, "italic"))    
+    tutorTurtle.turtle.write("END", 
+                             True, align="left", font=("Arial", 12, "normal"))
+    tutorTurtle.turtle.goto(-380,160)
+    tutorTurtle.turtle.write("PU  PD  SETPC colour", 
+                             True, align="left", font=("Arial", 12, "normal"))
+    tutorTurtle.turtle.goto(-395,140)
+    tutorTurtle.turtle.write("Example:", 
+                             True, align="left", font=("Arial", 12, "italic bold"))
+    tutorTurtle.turtle.goto(-380,120)
+    tutorTurtle.turtle.write("TO square REPEAT 4 [FD 30 RT 90] END   REPEAT 10 [square RT 36]", 
+                             True, align="left", font=("Courier New", 10, "normal"))
+    tutorTurtle.turtle.hideturtle()
+    #todo destroy?
+    del tutorTurtle
+    
     #create some demo turtles
     tc1 = TurtleContext(canvas)
     tc2 = TurtleContext(canvas)
@@ -274,6 +312,7 @@ if __name__ == "__main__":
     s= 'repeat 10 [REpEAT 90[fd 4 rt 4] rt 36]'  #nested repeat
     tc1.parse(s)
     tc2.parse(s)
+    s='TO square REPEAT 4 [FD 30 RT 90] END REPEAT 10 [square RT 36]'
     tc3.parse(s)
     
     #s = 'repeat 10 [ pu  fd 5 pd fd 5 ]'   #dotted
@@ -306,6 +345,8 @@ if __name__ == "__main__":
 
     for tc in tcs:
         print unicode(tcs[tc])
+        
+
 
     reactor.run()  #no need for tk mainloop
     
