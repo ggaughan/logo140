@@ -8,7 +8,7 @@ import Tkinter
 from collections import deque
 
 from twisted.internet import reactor, defer
-from twisted.internet.task import cooperate
+from twisted.internet.task import cooperate, LoopingCall
 from twisted.internet import tksupport
 
 import ply.lex as lex
@@ -58,6 +58,7 @@ class TurtleContext(object):
         #action
         self.turtle = LogoTurtle(canvas)
         
+        self.processloop = LoopingCall(self.process)
     
     def __unicode__(self):
         return "parsed=(%s)\nnp=%s\npending=(%s)" % (self.commands, self.np, self.pending_scripts)
@@ -74,7 +75,8 @@ class TurtleContext(object):
         new_commands = self.parser.parse(s, lexer=self.lexer)
         if new_commands is not None:
             self.commands.extend(new_commands)
-            self.process()
+            self.processloop.start(0.00001)
+            #self.process()
         #else possibly syntax error
     
     #def do_repeat(self, N):
@@ -89,6 +91,13 @@ class TurtleContext(object):
         """Returns True if we are currently in a function call"""
         return len(self.stack) > 0
     
+    def evaluate(self, expression):
+        """Runtime evaluation"""
+        if expression == 'repcount':
+            return self.repeat_counters[0][0]  #latest count
+        else:
+            return expression
+    
     def process(self):
         """Process the next command"""
         if self.np < len(self.commands):
@@ -97,15 +106,15 @@ class TurtleContext(object):
             stepping = True  #temp
             op, args = command[0], command[1:]
             if op == 'fd':
-                self.turtle.forward(args[0])
+                self.turtle.forward(self.evaluate(args[0]))
             elif op == 'bk':
-                self.turtle.backward(args[0])
+                self.turtle.backward(self.evaluate(args[0]))
             elif op == 'rt':
-                self.turtle.right(args[0])
+                self.turtle.right(self.evaluate(args[0]))
             elif op == 'lt':
-                self.turtle.left(args[0])
+                self.turtle.left(self.evaluate(args[0]))
             elif op == 'repeat':
-                self.repeat_counters.append((args[0], self.np))  #push start
+                self.repeat_counters.append((self.evaluate(args[0]), self.np))  #push start
             elif op == 'endrepeat':
                 (counter, np) = self.repeat_counters.pop()  #pop latest
                 counter -= 1
@@ -114,7 +123,7 @@ class TurtleContext(object):
                     self.np = np  #again
                 #else done, continue
             elif op == 'to':
-                self.namespace[0][args[0]] = self.np  #declare name + start point in locals (assumes name is lowercased already)
+                self.namespace[0][args[0].lower()] = self.np  #declare name + start point in locals (assumes name is lowercased already)
                 #todo store args too! so parser can check/greedy calls
                 #find corresponding endto and jump over it
                 endto_p = self.np
@@ -151,9 +160,11 @@ class TurtleContext(object):
             else:
                 #todo
                 print "Unknown command"
-            if stepping:
-                reactor.callLater(0.00001, self.process)  #todo improve!
+            #if stepping:
+            #    reactor.callLater(0.00001, self.process)  #todo improve!
         #else nothing to do (until the next parse at least)
+        else:
+            self.processloop.stop()
 
         
     #def _do_demo_repeat(self, N):
@@ -173,7 +184,7 @@ tcs = []
 def setup_window(title = "Turtles"):
     #setup canvas and make it play nicely with Twisted
     root = Tkinter.Tk() 
-    canvas = Tkinter.Canvas(root,width=600,height=600)
+    canvas = Tkinter.Canvas(root,width=800,height=600)
     canvas.pack(side = Tkinter.LEFT)
     tksupport.install(root)
     root.protocol('WM_DELETE_WINDOW', reactor.stop)
@@ -218,16 +229,13 @@ if __name__ == "__main__":
     tc8.turtle.left(40)
     tc9.turtle.left(220)
     tc10.turtle.left(190)
-    
-    tc1.parse('to square repeat 4 [fd 50 rt 90] end')
 
     #note: recursive functions not implemented yet and any will be ignored
 
-    #tc1.parse('repeat 36 [ square rt 10] ')
-    
-    tc1.parse('to flower repeat 36 [rt 10 square] end')
-    
-    tc1.parse('flower')  #nested function call
+    #tc1.parse('to square repeat 4 [fd 50 rt 90] end')
+    ##tc1.parse('repeat 36 [ square rt 10] ')
+    #tc1.parse('to flower repeat 36 [rt 10 square] end')
+    #tc1.parse('flower')  #nested function call
 
     #tc1._demo()
     #tc2._demo()   
@@ -237,12 +245,29 @@ if __name__ == "__main__":
     tc2.parse(s)
     tc3.parse(s)
     tc4.parse(s)
-    tc5.parse(s)
-    tc6.parse(s)
-    tc7.parse(s)
-    tc8.parse(s)
-    tc9.parse(s)
-    tc10.parse(s)
+    
+    #s = 'repeat 18 [repeat 5 [rt 40 fd 100 rt 120] rt 20]'
+    #tc5.parse(s)
+    
+    ##s = 'repeat 360 [repeat repcount [repeat repcount [fd repcount lt 15] home] lt 1]'  #growing (may want to stop before done)
+    #s= 'repeat 36 [repeat 36 [fd 10 rt 10] fd repcount rt 90 fd repcount]'
+    #tc6.parse(s)
+    
+    #s='repeat 12 [repeat 75 [fd 100 bk 100 rt 2] fd 250]'  #fanflower
+    #tc7.parse(s)
+    
+    #s = 'repeat 8 [repeat 4 [rt 90 fd 100] bk 100 lt 45]'  #hypercube
+    #tc8.parse(s)
+    
+    #s = 'repeat 100 [ fd repcount  rt 90 ]'  #todo repcount*2
+    #tc9.parse(s)
+    
+    #s = 'to SAWTOOTH  rt   45   fd 56   lt    135   fd 40  rt   90  end'
+    #tc10.parse(s)
+    #s= 'to SAWBLADE repeat 12 [ SAWTOOTH rt 30 ] end'
+    #tc10.parse(s)
+    #s = 'SAWBLADE'
+    #tc10.parse(s)
     
 
     for tc in tcs:

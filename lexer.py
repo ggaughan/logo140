@@ -10,6 +10,8 @@ reserved = {
    'rt': 'RIGHT',
    'to': 'TO',
    'end': 'END',
+   'repcount': 'REPCOUNT',
+   'home': 'HOME',
    #etc
 }
 

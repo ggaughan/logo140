@@ -35,7 +35,7 @@ def p_command(p):
         if hasattr(p.lexer, 'context'):
             ns = p.lexer.context.namespace_lookup(p[1].lower())
             if ns is not None:
-                p[0] = ('call', p[1])  #standalone, known-name is a call  #todo we could add ns/lookup info here
+                p[0] = ('call', p[1].lower())  #standalone, known-name is a call  #todo we could add ns/lookup info here
             else:
                 #todo if we're inside a TO definition with this name then allow this recursive call too
                 #- it will then be resolved ok at runtime
@@ -45,7 +45,10 @@ def p_command(p):
         p[0] = p[1]
     
 def p_repeat(p):
-    'repeat : REPEAT NUMBER LBRACKET commands RBRACKET'
+    '''repeat : REPEAT NUMBER LBRACKET commands RBRACKET
+              | REPEAT REPCOUNT LBRACKET commands RBRACKET
+    '''
+    #todo combine NUMBER/REPCOUNT!
     #todo handle missing NUMBER syntax error
     p[0] = [(p[1], p[2])]
     p[0].extend(p[4])
@@ -59,8 +62,15 @@ def p_to(p):
     
     
 def p_movement(p):
-    'movement : movement_type NUMBER'
-    p[0] = (p[1], p[2])
+    '''movement : movement_type NUMBER
+                | movement_type REPCOUNT
+                | HOME
+    '''
+    #todo combine NUMBER/REPCOUNT!
+    if len(p) > 2:
+        p[0] = (p[1], p[2])
+    else:
+        p[0] = (p[1], None)
     
 def p_movement_type(p):
     '''movement_type : FORWARD
