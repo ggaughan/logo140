@@ -80,6 +80,12 @@ if __name__ == "__main__":
     #tc10.parse(s)
     
 
+    #tc1.parse('to SAWTOOTH  rt   45   fd 56   lt    135   fd 40  rt   90  end')
+    #tc1.parse('to SAWBLADE repeat 12 [ SAWTOOTH rt 30 ] end')
+    #tc1.parse('to eyeball repeat 36 [ SAWBLADE rt 10] end')
+    #tc1.parse('eyeball')
+    
+    
     #for tc in tcs:
     #    print unicode(tcs[tc])       
     
