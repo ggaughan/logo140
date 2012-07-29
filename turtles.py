@@ -114,7 +114,7 @@ class TurtleContext(object):
         #self._do_demo_repeat(40)
     
     
-tcs = []    
+tcs = {}    
 
 def setup_window(title = "Turtles"):
     #setup canvas and make it play nicely with Twisted
@@ -136,18 +136,29 @@ def get_sms():
         m.delete()
     return m_data
 
+def dispatcher():
+    sms = get_sms()
+    o = json.loads(sms)
+    try:
+        sms_id = o.get('to')[0]
+    except IndexError:
+        pass
+        
 if __name__ == "__main__":
     canvas = setup_window("Logo140 - Leeds Hack 2012")
-    
+
     #create some demo turtles
     tc1 = TurtleContext(canvas)
     tc2 = TurtleContext(canvas)
     tc3 = TurtleContext(canvas)
     tc4 = TurtleContext(canvas)
     tc5 = TurtleContext(canvas)
-    tcs.append(tc1)
-    tcs.append(tc2)
-    tcs.extend([tc3, tc4, tc5])
+    
+    tcs['1'] = tc1
+    tcs['2'] = tc2
+    tcs['3'] = tc3
+    tcs['4'] = tc4
+    tcs['5'] = tc5
     
     tc1.turtle.pen(pencolor = 'blue')
     tc2.turtle.pen(pencolor = 'red')
@@ -182,7 +193,9 @@ if __name__ == "__main__":
 
     for tc in tcs:
         print unicode(tc)
-        
+
+    #l = task.LoopingCall(dispatcher)
+    #l.start(2.0)        
 
     reactor.run()  #no need for tk mainloop
     
