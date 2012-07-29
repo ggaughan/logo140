@@ -30,6 +30,9 @@ WINDOW_HEIGHT = 600
 TURTLE_SPEED = 5  #1=slowest, 10=fast (0=no anim = fastest)
 TURTLE_DEMO_SPEED = 8  #1=slowest, 10=fast (0=no anim = fastest)
 
+EXAMPLE_SCRIPT = "TO square REPEAT 4 [FD 20 RT 90] END   REPEAT 9 [square RT 40]"
+
+
 class LogoTurtle(turtle.RawTurtle):
     """Wrapper around turtle
        In future, this could be swapped out to render elsewhere...
@@ -237,8 +240,6 @@ def draw_headings(canvas):
     tutorTurtle.turtle.goto(-380,172)
     tutorTurtle.turtle.write("PU  PD  SETPC colour", 
                              True, align="left", font=("Courier New", 11, "normal"))
-    
-    EXAMPLE_SCRIPT = "TO square REPEAT 4 [FD 20 RT 90] END   REPEAT 9 [square RT 40]"
     
     tutorTurtle.turtle.goto(-395,152)
     tutorTurtle.turtle.write("Example:", 
