@@ -75,7 +75,11 @@ class TurtleContext(object):
         new_commands = self.parser.parse(s, lexer=self.lexer)
         if new_commands is not None:
             self.commands.extend(new_commands)
-            self.processloop.start(0.00001)
+            try:
+                self.processloop.stop()
+            except AssertionError:
+                pass  #don't care if already stopped
+            self.processloop.start(0.0000001)
             #self.process()
         #else possibly syntax error
     
@@ -113,6 +117,12 @@ class TurtleContext(object):
                 self.turtle.right(self.evaluate(args[0]))
             elif op == 'lt':
                 self.turtle.left(self.evaluate(args[0]))
+            elif op == 'pu':
+                self.turtle.penup()
+            elif op == 'pd':
+                self.turtle.pendown()
+            elif op == 'setpc':
+                self.turtle.pencolor(self.evaluate(args[0]))                
             elif op == 'repeat':
                 self.repeat_counters.append((self.evaluate(args[0]), self.np))  #push start
             elif op == 'endrepeat':
@@ -211,16 +221,16 @@ if __name__ == "__main__":
     tcs.extend([tc3, tc4, tc5])
     tcs.extend([tc6, tc7, tc8, tc9, tc10])
     
-    tc1.turtle.pen(pencolor = 'blue')
-    tc2.turtle.pen(pencolor = 'red')
-    tc3.turtle.pen(pencolor = 'green')
-    tc4.turtle.pen(pencolor = 'orange')
-    tc5.turtle.pen(pencolor = 'purple')
-    tc6.turtle.pen(pencolor = 'blue')
-    tc7.turtle.pen(pencolor = 'red')
-    tc8.turtle.pen(pencolor = 'green')
-    tc9.turtle.pen(pencolor = 'orange')
-    tc10.turtle.pen(pencolor = 'purple')
+    tc1.parse('setpc blue')
+    tc2.parse('setpc red')
+    tc3.parse('setpc green')
+    tc4.parse('setpc orange')
+    tc5.parse('setpc purple')
+    tc6.parse('setpc blue')
+    tc7.parse('setpc red')
+    tc8.parse('setpc green')
+    tc9.parse('setpc orange')
+    tc10.parse('setpc purple')
     tc2.turtle.left(180)
     tc3.turtle.left(90)
     tc4.turtle.left(270)
@@ -240,10 +250,13 @@ if __name__ == "__main__":
     #tc1._demo()
     #tc2._demo()   
     
-    s= 'repeat 20 [repeat 90[fd 6 rt 4] rt 5]'  #nested repeat
+    s= 'repeat 10 [repeat 90[fd 4 rt 4] rt 36]'  #nested repeat
     tc1.parse(s)
     tc2.parse(s)
     tc3.parse(s)
+    
+    #s = 'repeat 10 [ pu  fd 5 pd fd 5 ]'   #dotted
+    s = 'fd 50 setpc magenta fd 50'   
     tc4.parse(s)
     
     #s = 'repeat 18 [repeat 5 [rt 40 fd 100 rt 120] rt 20]'

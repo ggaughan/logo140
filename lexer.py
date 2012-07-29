@@ -12,6 +12,9 @@ reserved = {
    'end': 'END',
    'repcount': 'REPCOUNT',
    'home': 'HOME',
+   'pu': 'PENUP',
+   'pd': 'PENDOWN',
+   'setpc': 'SETPENCOLOR',
    #etc
 }
 

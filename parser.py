@@ -65,6 +65,9 @@ def p_movement(p):
     '''movement : movement_type NUMBER
                 | movement_type REPCOUNT
                 | HOME
+                | PENUP
+                | PENDOWN
+                | SETPENCOLOR ID
     '''
     #todo combine NUMBER/REPCOUNT!
     if len(p) > 2:
