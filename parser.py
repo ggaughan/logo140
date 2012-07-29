@@ -1,3 +1,7 @@
+# Logo (cut-down) Parser
+# Leeds Hack 2012
+# Monkey Tennis
+
 import ply.yacc as yacc
 
 # Get the token map from the lexer.  This is required.

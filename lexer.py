@@ -1,4 +1,4 @@
-# Logo (cut-down) Parser
+# Logo (cut-down) Lexer
 # Leeds Hack 2012
 # Monkey Tennis
 
@@ -57,7 +57,7 @@ t_ignore  = ' \t'
 
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
-    t.type = reserved.get(t.value.lower(), 'ID')    # Check for reserved words  #todo make case insensitive
+    t.type = reserved.get(t.value.lower(), 'ID')    # Check for reserved words
     return t
 
 

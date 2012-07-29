@@ -48,7 +48,7 @@ class TurtleContext(object):
 
         #namespaces
         self.namespace = deque()
-        self.namespace.append({})  #globals  #todo complete
+        self.namespace.append({})  #globals  #todo define some!
         self.namespace.append({})  #locals  #function locals will be added and removed at runtime
 
         #stack frames
@@ -117,7 +117,6 @@ class TurtleContext(object):
         if self.np < len(self.commands):
             command = self.commands[self.np]
             self.np += 1
-            stepping = True  #temp
             op, args = command[0], command[1:]
             op = op.lower()  #something wrong here: fix parser!
             try:
@@ -187,27 +186,12 @@ class TurtleContext(object):
                 else:
                     #todo
                     print "I don't know how to %s" % op
-                #if stepping:
-                #    reactor.callLater(0.00001, self.process)  #todo improve!
             except Exception, e:
                 print "Exception " + unicode(e)
                 #carry on
         #else nothing to do (until the next parse at least)
         else:
             self.processloop.stop()
-
-        
-    #def _do_demo_repeat(self, N):
-        #def repeat_coop():
-            #for obj in xrange(N):
-                #self.turtle.forward(10)
-                #self.turtle.right(2)
-                #yield None
-        #return cooperate(repeat_coop())
-    #def _demo(self):
-        #"""test demo: temp - todo remove"""
-        #self._do_demo_repeat(40)
-    
     
 tcs = {}    
 
@@ -287,9 +271,6 @@ if __name__ == "__main__":
     #tc1.parse('to flower repeat 36 [rt 10 square] end')
     #tc1.parse('flower')  #nested function call
 
-    #tc1._demo()
-    #tc2._demo()   
-    
     s= 'repeat 10 [REpEAT 90[fd 4 rt 4] rt 36]'  #nested repeat
     tc1.parse(s)
     tc2.parse(s)
@@ -324,10 +305,7 @@ if __name__ == "__main__":
     
 
     for tc in tcs:
-        print unicode(tc)
-
-    #l = task.LoopingCall(dispatcher)
-    #l.start(2.0)        
+        print unicode(tcs[tc])
 
     reactor.run()  #no need for tk mainloop
     
