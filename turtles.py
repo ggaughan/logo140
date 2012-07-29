@@ -218,22 +218,25 @@ def get_sms():
 
 def dispatcher():
     sms = get_sms()
-    o = json.loads(sms)
-    sms_id = ''
-    try:
-        sms_id = o.get('from')[0]
-    except IndexError:
-        pass
     
-    turtle = tcs.get(sms_id)
-    content = ' '.join(o.get('content'))
+    if sms:
+        sms_id = ''        
+        o = json.loads(sms)
+        try:
+            sms_id = o.get('from')[0]
+        except IndexError:
+            pass
     
-    if turtle:
-        turtle.parse(content)
-    else:
-        tc = TurtleContext(canvas)
-        tc.parse(content)
-        tcs.update({sms_id: tc})
+        turtle = tcs.get(sms_id)
+        content = ' '.join(o.get('content'))
+        
+        if turtle:
+            turtle.parse(content)
+        else:
+            tc = TurtleContext(canvas)
+            tc.parse(content)
+            tcs.update({sms_id: tc})
+    print '*'*50, tcs
                 
 if __name__ == "__main__":
     canvas = setup_window("Logo140 - Leeds Hack 2012")
