@@ -30,7 +30,8 @@ tokens = [
    'LBRACKET',
    'RBRACKET',
    'ID',
-   'NS_ID',] + list(reserved.values())
+   'NS_ID',
+   ] + list(reserved.values())
 
 # Regular expression rules for simple tokens
 #t_PLUS    = r'\+'
@@ -43,6 +44,7 @@ t_LBRACKET  = r'\['
 t_RBRACKET  = r'\]'
 #todo better?
 literals = "+-*/"
+
 
 # A regular expression rule with some action code
 def t_NUMBER(t):
