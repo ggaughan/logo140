@@ -23,6 +23,10 @@ import json
 
 LONG_NUMBER = "07624 809318"
 MAX_RECURSION = 50
+
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 600
+
 TURTLE_SPEED = 5  #1=slowest, 10=fast (0=no anim = fastest)
 TURTLE_DEMO_SPEED = 8  #1=slowest, 10=fast (0=no anim = fastest)
 
@@ -259,7 +263,7 @@ def draw_headings(canvas):
 def setup_window(title = "Turtles"):
     #setup canvas and make it play nicely with Twisted
     root = Tkinter.Tk() 
-    canvas = Tkinter.Canvas(root,width=800,height=600)
+    canvas = Tkinter.Canvas(root,width=WINDOW_WIDTH,height=WINDOW_HEIGHT)
     canvas.pack(side = Tkinter.LEFT)
 
     tksupport.install(root)
