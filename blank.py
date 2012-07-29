@@ -5,7 +5,6 @@ from turtles import setup_window, draw_headings, TurtleContext, Dispatcher
 
 if __name__ == "__main__":
     canvas = setup_window("Logo140, Collaborative Art Installation - Leeds Hack 2012")
-    draw_headings(canvas)
 
     
     dispatcher = Dispatcher(canvas=canvas)
