@@ -83,9 +83,10 @@ if __name__ == "__main__":
     #for tc in tcs:
     #    print unicode(tcs[tc])       
     
-    dispatcher = Dispatcher()
-    l = LoopingCall(dispatcher.dispatcher)
-    l.start(5.0)        
+    #no SQS for testing
+    #dispatcher = Dispatcher()
+    #l = LoopingCall(dispatcher.dispatcher)
+    #l.start(5.0)        
 
     reactor.run()  #no need for tk mainloop
     
