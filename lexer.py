@@ -73,7 +73,7 @@ if __name__ == "__main__":
     lexer = lex.lex()
 
     # Test it out
-    data = '''  repeat  3 + greg + 4 * 10      + -20 *2  IF then ELse '''
+    data = '''  repeat  3 FD 2 fd 5  + greg + 4 * 10      + -20 *2  IF then ELse '''
 
     # Give the lexer some input
     lexer.input(data)
