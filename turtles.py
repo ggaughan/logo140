@@ -7,7 +7,7 @@ import Tkinter
 
 from collections import deque
 
-from twisted.internet import reactor, defer
+from twisted.internet import reactor, defer, task
 from twisted.internet.task import cooperate
 from twisted.internet import tksupport
 
