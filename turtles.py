@@ -114,69 +114,73 @@ class TurtleContext(object):
             stepping = True  #temp
             op, args = command[0], command[1:]
             op = op.lower()  #something wrong here: fix parser!
-            if op == 'fd':
-                self.turtle.forward(self.evaluate(args[0]))
-            elif op == 'bk':
-                self.turtle.backward(self.evaluate(args[0]))
-            elif op == 'rt':
-                self.turtle.right(self.evaluate(args[0]))
-            elif op == 'lt':
-                self.turtle.left(self.evaluate(args[0]))
-            elif op == 'pu':
-                self.turtle.penup()
-            elif op == 'pd':
-                self.turtle.pendown()
-            elif op == 'setpc':
-                self.turtle.pencolor(self.evaluate(args[0]))                
-            elif op == 'repeat':
-                self.repeat_counters.append((self.evaluate(args[0]), self.np))  #push start
-            elif op == 'endrepeat':
-                (counter, np) = self.repeat_counters.pop()  #pop latest
-                counter -= 1
-                if counter > 0:
-                    self.repeat_counters.append((counter, np))  #push back
-                    self.np = np  #again
-                #else done, continue
-            elif op == 'to':
-                self.namespace[0][args[0].lower()] = self.np  #declare name + start point in locals (assumes name is lowercased already)
-                #todo store args too! so parser can check/greedy calls
-                #find corresponding endto and jump over it
-                endto_p = self.np
-                depth = 1
-                for c in self.commands[self.np:]:
-                    endto_p += 1
-                    if c[0] == 'to':
-                        depth += 1  #handle nested to
-                    if c[0] == 'endto':
-                        depth -= 1
-                        if depth == 0:
-                            self.np = endto_p
-                            break
-            elif op == 'endto':
-                if self.calling():
-                    (name, np) = self.stack.pop()  #pop local stack frame
-                    self.namespace.pop()  #pop local namespace
-                    self.np = np  #restore np
-                #else nop, i.e. pass over end of definition
-            elif op == 'call':
-                #note: any nested tos will be dealt with within (same level only - further inners will be jumped over)
-                ns = self.lexer.context.namespace_lookup(args[0])   #(assumes name is lowercased already)
-                if ns is not None:
-                    if len(self.stack) > MAX_RECURSION:
-                        print "Maximum stack reached - call will be ignored (%s)" % unicode(self)
-                    else:
-                        self.stack.append((args[0], self.np))  #push local stack frame
-                        self.namespace.append({})  #create local namespace
-                        #todo pass args to function via local namespace
-                        self.np = ns[args[0]]  #jump to function
-                #todo else runtime error: lexer found function but no longer there (scope issue?)
-                    
-            #todo etc.
-            else:
-                #todo
-                print "I don't know how to %s" % op
-            #if stepping:
-            #    reactor.callLater(0.00001, self.process)  #todo improve!
+            try:
+                if op == 'fd':
+                    self.turtle.forward(self.evaluate(args[0]))
+                elif op == 'bk':
+                    self.turtle.backward(self.evaluate(args[0]))
+                elif op == 'rt':
+                    self.turtle.right(self.evaluate(args[0]))
+                elif op == 'lt':
+                    self.turtle.left(self.evaluate(args[0]))
+                elif op == 'pu':
+                    self.turtle.penup()
+                elif op == 'pd':
+                    self.turtle.pendown()
+                elif op == 'setpc':
+                    self.turtle.pencolor(str(self.evaluate(args[0])))
+                elif op == 'repeat':
+                    self.repeat_counters.append((self.evaluate(args[0]), self.np))  #push start
+                elif op == 'endrepeat':
+                    (counter, np) = self.repeat_counters.pop()  #pop latest
+                    counter -= 1
+                    if counter > 0:
+                        self.repeat_counters.append((counter, np))  #push back
+                        self.np = np  #again
+                    #else done, continue
+                elif op == 'to':
+                    self.namespace[0][args[0].lower()] = self.np  #declare name + start point in locals (assumes name is lowercased already)
+                    #todo store args too! so parser can check/greedy calls
+                    #find corresponding endto and jump over it
+                    endto_p = self.np
+                    depth = 1
+                    for c in self.commands[self.np:]:
+                        endto_p += 1
+                        if c[0] == 'to':
+                            depth += 1  #handle nested to
+                        if c[0] == 'endto':
+                            depth -= 1
+                            if depth == 0:
+                                self.np = endto_p
+                                break
+                elif op == 'endto':
+                    if self.calling():
+                        (name, np) = self.stack.pop()  #pop local stack frame
+                        self.namespace.pop()  #pop local namespace
+                        self.np = np  #restore np
+                    #else nop, i.e. pass over end of definition
+                elif op == 'call':
+                    #note: any nested tos will be dealt with within (same level only - further inners will be jumped over)
+                    ns = self.lexer.context.namespace_lookup(args[0])   #(assumes name is lowercased already)
+                    if ns is not None:
+                        if len(self.stack) > MAX_RECURSION:
+                            print "Maximum stack reached - call will be ignored (%s)" % unicode(self)
+                        else:
+                            self.stack.append((args[0], self.np))  #push local stack frame
+                            self.namespace.append({})  #create local namespace
+                            #todo pass args to function via local namespace
+                            self.np = ns[args[0]]  #jump to function
+                    #todo else runtime error: lexer found function but no longer there (scope issue?)
+                        
+                #todo etc.
+                else:
+                    #todo
+                    print "I don't know how to %s" % op
+                #if stepping:
+                #    reactor.callLater(0.00001, self.process)  #todo improve!
+            except Exception, e:
+                print "Exception " + unicode(e)
+                #carry on
         #else nothing to do (until the next parse at least)
         else:
             self.processloop.stop()
@@ -248,7 +252,7 @@ if __name__ == "__main__":
     
     tc1.parse('setpc blue')
     tc2.parse('setpc red')
-    tc3.parse('setpc green')
+    tc3.parse(u'setpc green')
     tc4.parse('setpc orange')
     tc5.parse('setpc purple')
     tc6.parse('setpc blue')
