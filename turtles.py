@@ -6,7 +6,7 @@ import turtle
 import Tkinter
 
 from collections import deque
-
+import random
 
 from twisted.internet import reactor, defer
 from twisted.internet.task import cooperate, LoopingCall
@@ -43,7 +43,7 @@ class TurtleContext(object):
         super(TurtleContext, self).__init__(**kwargs)
         
         #incoming
-        self.pending_scripts = deque([])  #stuff still to be parsed
+        self.parsing = None  #last parsed
         self.lexer = lex.lex(module=lexer)
         self.lexer.context = self  #reverse reference, so lexer can access current namespaces
         self.parser = parser.parser
@@ -67,7 +67,7 @@ class TurtleContext(object):
         self.processloop = LoopingCall(self.process)
     
     def __unicode__(self):
-        return "parsed=(%s)\nnp=%s\npending=(%s)" % (self.commands, self.np, self.pending_scripts)
+        return "parsed=(%s)\nnp=%s\nlast parsed=(%s)" % (self.commands, self.np, self.parsing)
     
     def namespace_lookup(self, name):
         """Find which namespace the name is in, starting with locals first then working outwards
@@ -78,7 +78,8 @@ class TurtleContext(object):
                 return ns
     
     def parse(self, s):
-        new_commands = self.parser.parse(s, lexer=self.lexer)
+        self.parsing = s
+        new_commands = self.parser.parse(self.parsing, lexer=self.lexer)
         if new_commands is not None:
             self.commands.extend(new_commands)
             try:
@@ -88,14 +89,6 @@ class TurtleContext(object):
             self.processloop.start(0.0000001)
             #self.process()
         #else possibly syntax error
-    
-    #def do_repeat(self, N):
-        #def repeat_coop():
-            #for obj in xrange(N):
-                #self.turtle.forward(10)
-                #self.turtle.right(2)
-                #yield None
-        #return cooperate(repeat_coop())
     
     def calling(self):
         """Returns True if we are currently in a function call"""
@@ -137,8 +130,13 @@ class TurtleContext(object):
                 elif op == 'pd':
                     self.turtle.pendown()
                 elif op == 'setpc':
-                    self.turtle.pencolor(str(self.evaluate(args[0])))
+                    try:
+                        self.turtle.pencolor(str(self.evaluate(args[0])))
+                    except:
+                        print "Failed setting pencolor to %s" % str(self.evaluate(args[0]))
+                        #continue
                 elif op == 'repeat':
+                    #todo limit size?
                     self.repeat_counters.append((self.evaluate(args[0]), self.np))  #push start
                 elif op == 'endrepeat':
                     (counter, np) = self.repeat_counters.pop()  #pop latest
@@ -263,10 +261,13 @@ def setup_window(title = "Turtles"):
     root = Tkinter.Tk() 
     canvas = Tkinter.Canvas(root,width=800,height=600)
     canvas.pack(side = Tkinter.LEFT)
+
     tksupport.install(root)
-    root.protocol('WM_DELETE_WINDOW', reactor.stop)
+   
     root.title(title)
+    draw_headings(canvas)
     
+    root.protocol('WM_DELETE_WINDOW', reactor.stop)
     
     return canvas
 
@@ -305,6 +306,8 @@ class Dispatcher(object):
                 turtle.parse(content)
             else:
                 tc = TurtleContext(self.canvas)
+                tc.turtle.pencolor(random.random(), random.random(), random.random())
+                tc.turtle.fillcolor(random.random(), random.random(), random.random())
                 tc.parse(content)
                 tcs.update({sms_id: tc})
         
@@ -314,7 +317,6 @@ class Dispatcher(object):
                 
 if __name__ == "__main__":
     canvas = setup_window("Logo140 - Leeds Hack 2012")
-    draw_headings(canvas)
     
     dispatcher = Dispatcher(canvas=canvas)
     l = LoopingCall(dispatcher.dispatcher)
