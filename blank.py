@@ -8,7 +8,7 @@ if __name__ == "__main__":
     draw_headings(canvas)
 
     
-    dispatcher = Dispatcher()
+    dispatcher = Dispatcher(canvas=canvas)
     l = LoopingCall(dispatcher.dispatcher)
     l.start(5.0)        
 
