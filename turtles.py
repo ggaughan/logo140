@@ -236,7 +236,7 @@ def draw_headings(canvas):
     tutorTurtle.turtle.write("PU  PD  SETPC colour", 
                              True, align="left", font=("Courier New", 11, "normal"))
     
-    EXAMPLE_SCRIPT = "TO square REPEAT 4 [FD 20 RT 90] END   REPEAT 6 [square RT 60]"
+    EXAMPLE_SCRIPT = "TO square REPEAT 4 [FD 20 RT 90] END   REPEAT 9 [square RT 40]"
     
     tutorTurtle.turtle.goto(-395,152)
     tutorTurtle.turtle.write("Example:", 
