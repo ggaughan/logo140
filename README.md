@@ -8,3 +8,4 @@ requirements
  * sudo aptitude install python-tk package
  * pip install twisted
  * pip install ply
+ * pip install boto
