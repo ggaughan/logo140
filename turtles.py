@@ -21,7 +21,7 @@ import parser
 import boto
 import json
 
-MAX_RECURSION = 5
+MAX_RECURSION = 50
 TURTLE_SPEED = 10  #1=slowest, 10=fast (0=no anim = fastest)
 
 class LogoTurtle(turtle.RawTurtle):
