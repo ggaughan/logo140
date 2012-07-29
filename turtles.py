@@ -218,11 +218,22 @@ def get_sms():
 def dispatcher():
     sms = get_sms()
     o = json.loads(sms)
+    sms_id = ''
     try:
-        sms_id = o.get('to')[0]
+        sms_id = o.get('from')[0]
     except IndexError:
         pass
-        
+    
+    turtle = tcs.get(sms_id)
+    content = ' '.join(o.get('content'))
+    
+    if turtle:
+        turtle.parse(content)
+    else:
+        tc = TurtleContext(canvas)
+        tc.parse(content)
+        tcs.update({sms_id: tc})
+                
 if __name__ == "__main__":
     canvas = setup_window("Logo140 - Leeds Hack 2012")
 
@@ -310,8 +321,8 @@ if __name__ == "__main__":
     for tc in tcs:
         print unicode(tc)
 
-    #l = task.LoopingCall(dispatcher)
-    #l.start(2.0)        
+    l = LoopingCall(dispatcher)
+    l.start(5.0)        
 
     reactor.run()  #no need for tk mainloop
     
