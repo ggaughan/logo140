@@ -28,21 +28,52 @@ def p_commands(p):
 def p_command(p):
     '''command : movement
                | repeat
+               | to
+               | ID
     '''
-    p[0] = p[1]   
+    if isinstance(p[1], basestring): #ID
+        if hasattr(p.lexer, 'context'):
+            ns = p.lexer.context.namespace_lookup(p[1].lower())
+            if ns is not None:
+                p[0] = ('call', p[1].lower())  #standalone, known-name is a call  #todo we could add ns/lookup info here
+            else:
+                #todo if we're inside a TO definition with this name then allow this recursive call too
+                #- it will then be resolved ok at runtime
+                print "I don't know how to %s" % p[1]
+                raise SyntaxError("I don't know how to %s" % p[1])
+    else:
+        p[0] = p[1]
     
 def p_repeat(p):
-    'repeat : REPEAT NUMBER LBRACKET commands RBRACKET'
-    #p[0] = (p[1], p[2], p[4])
+    '''repeat : REPEAT NUMBER LBRACKET commands RBRACKET
+              | REPEAT REPCOUNT LBRACKET commands RBRACKET
+    '''
+    #todo combine NUMBER/REPCOUNT!
     #todo handle missing NUMBER syntax error
     p[0] = [(p[1], p[2])]
     p[0].extend(p[4])
     p[0].append(('endrepeat', None))
 
+def p_to(p):
+    'to : TO ID commands END'
+    p[0] = [(p[1], p[2])]
+    p[0].extend(p[3])
+    p[0].append(('endto', None))
+    
     
 def p_movement(p):
-    'movement : movement_type NUMBER'
-    p[0] = (p[1], p[2])
+    '''movement : movement_type NUMBER
+                | movement_type REPCOUNT
+                | HOME
+                | PENUP
+                | PENDOWN
+                | SETPENCOLOR ID
+    '''
+    #todo combine NUMBER/REPCOUNT!
+    if len(p) > 2:
+        p[0] = (p[1], p[2])
+    else:
+        p[0] = (p[1], None)
     
 def p_movement_type(p):
     '''movement_type : FORWARD
@@ -53,7 +84,7 @@ def p_movement_type(p):
     p[0] = p[1]
 
 def p_error(p):
-    print "Syntax error in input!"    
+    print "Syntax error in input! %s" % p
     yacc.restart()
     
 parser = yacc.yacc()

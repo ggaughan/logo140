@@ -8,6 +8,13 @@ reserved = {
    'bk': 'BACKWARD',
    'lt': 'LEFT',
    'rt': 'RIGHT',
+   'to': 'TO',
+   'end': 'END',
+   'repcount': 'REPCOUNT',
+   'home': 'HOME',
+   'pu': 'PENUP',
+   'pd': 'PENDOWN',
+   'setpc': 'SETPENCOLOR',
    #etc
 }
 
@@ -22,7 +29,8 @@ tokens = [
    'RPAREN',
    'LBRACKET',
    'RBRACKET',
-   'ID'] + list(reserved.values())
+   'ID',
+   'NS_ID',] + list(reserved.values())
 
 # Regular expression rules for simple tokens
 #t_PLUS    = r'\+'
