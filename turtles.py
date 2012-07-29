@@ -24,6 +24,7 @@ import json
 LONG_NUMBER = "07624 809318"
 MAX_RECURSION = 50
 TURTLE_SPEED = 5  #1=slowest, 10=fast (0=no anim = fastest)
+TURTLE_DEMO_SPEED = 8  #1=slowest, 10=fast (0=no anim = fastest)
 
 class LogoTurtle(turtle.RawTurtle):
     """Wrapper around turtle
@@ -196,6 +197,67 @@ class TurtleContext(object):
     
 tcs = {}    
 
+def draw_headings(canvas):
+    tutorTurtle = TurtleContext(canvas)
+    tutorTurtle.turtle.penup()
+    
+    tutorTurtle.turtle.goto(-395,260)
+    tutorTurtle.turtle.write("Text your LOGO commands to your turtle at", 
+                             True, align="left", font=("Arial", 14, "bold"))
+    tutorTurtle.turtle.pencolor('red')
+    tutorTurtle.turtle.write(" %s" % LONG_NUMBER, 
+                             True, align="left", font=("Arial", 14, "bold italic"))    
+    tutorTurtle.turtle.pencolor('black')
+    
+    tutorTurtle.turtle.goto(-395,240)
+    tutorTurtle.turtle.write("Commands:", 
+                             True, align="left", font=("Arial", 12, "italic bold"))
+    
+    tutorTurtle.turtle.goto(-380,220)
+    tutorTurtle.turtle.write("FD n  LT n  RT n  BK n  HOME",
+                             True, align="left", font=("Courier New", 11, "normal"))
+    tutorTurtle.turtle.goto(-380,204)
+    tutorTurtle.turtle.write("REPEAT n [", 
+                             True, align="left", font=("Courier New", 11, "normal"))
+    tutorTurtle.turtle.write(" commands ", 
+                             True, align="left", font=("Courier New", 11, "italic"))    
+    tutorTurtle.turtle.write("]", 
+                             True, align="left", font=("Courier New", 11, "normal"))
+    tutorTurtle.turtle.goto(-380,188)
+    tutorTurtle.turtle.write("TO", 
+                             True, align="left", font=("Courier New", 11, "normal"))
+    tutorTurtle.turtle.write(" x ", 
+                             True, align="left", font=("Courier New", 11, "bold"))    
+    tutorTurtle.turtle.write(" commands ", 
+                             True, align="left", font=("Courier New", 11, "italic"))    
+    tutorTurtle.turtle.write("END", 
+                             True, align="left", font=("Courier New", 11, "normal"))
+    tutorTurtle.turtle.goto(-380,172)
+    tutorTurtle.turtle.write("PU  PD  SETPC colour", 
+                             True, align="left", font=("Courier New", 11, "normal"))
+    
+    EXAMPLE_SCRIPT = "TO square REPEAT 4 [FD 20 RT 90] END   REPEAT 6 [square RT 60]"
+    
+    tutorTurtle.turtle.goto(-395,152)
+    tutorTurtle.turtle.write("Example:", 
+                             True, align="left", font=("Arial", 12, "italic bold"))
+    tutorTurtle.turtle.goto(-380,132)
+    tutorTurtle.turtle.write(EXAMPLE_SCRIPT, 
+                             True, align="left", font=("Courier New", 10, "normal"))
+    tutorTurtle.turtle.hideturtle()
+    
+    tutorTurtle.turtle.showturtle()
+    tutorTurtle.turtle.goto(+20,210)
+    tutorTurtle.turtle.pendown()
+    tutorTurtle.turtle.pensize(2)
+    tutorTurtle.turtle.speed(TURTLE_DEMO_SPEED)
+    tutorTurtle.turtle.pencolor('green')
+    tutorTurtle.parse(EXAMPLE_SCRIPT)
+    tutorTurtle.turtle.hideturtle()
+
+    del tutorTurtle
+    
+
 def setup_window(title = "Turtles"):
     #setup canvas and make it play nicely with Twisted
     root = Tkinter.Tk() 
@@ -204,6 +266,8 @@ def setup_window(title = "Turtles"):
     tksupport.install(root)
     root.protocol('WM_DELETE_WINDOW', reactor.stop)
     root.title(title)
+    
+    
     return canvas
 
 
@@ -249,65 +313,7 @@ class Dispatcher(object):
                 
 if __name__ == "__main__":
     canvas = setup_window("Logo140 - Leeds Hack 2012")
-
-    tutorTurtle = TurtleContext(canvas)
-    tutorTurtle.turtle.penup()
-
-    
-    tutorTurtle.turtle.goto(-395,260)
-    tutorTurtle.turtle.write("Text your LOGO commands to your turtle at", 
-                             True, align="left", font=("Arial", 14, "bold"))
-    tutorTurtle.turtle.pencolor('red')
-    tutorTurtle.turtle.write(" %s" % LONG_NUMBER, 
-                             True, align="left", font=("Arial", 14, "bold italic"))    
-    tutorTurtle.turtle.pencolor('black')
-    
-    tutorTurtle.turtle.goto(-395,240)
-    tutorTurtle.turtle.write("Commands:", 
-                             True, align="left", font=("Arial", 12, "italic bold"))
-    
-    tutorTurtle.turtle.goto(-380,220)
-    tutorTurtle.turtle.write("FD n  LT n  RT n  BK n  HOME",
-                             True, align="left", font=("Courier New", 11, "normal"))
-    tutorTurtle.turtle.goto(-380,204)
-    tutorTurtle.turtle.write("REPEAT n [", 
-                             True, align="left", font=("Courier New", 11, "normal"))
-    tutorTurtle.turtle.write(" commands ", 
-                             True, align="left", font=("Courier New", 11, "italic"))    
-    tutorTurtle.turtle.write("]", 
-                             True, align="left", font=("Courier New", 11, "normal"))
-    tutorTurtle.turtle.goto(-380,188)
-    tutorTurtle.turtle.write("TO", 
-                             True, align="left", font=("Courier New", 11, "normal"))
-    tutorTurtle.turtle.write(" x ", 
-                             True, align="left", font=("Courier New", 11, "bold"))    
-    tutorTurtle.turtle.write(" commands ", 
-                             True, align="left", font=("Courier New", 11, "italic"))    
-    tutorTurtle.turtle.write("END", 
-                             True, align="left", font=("Courier New", 11, "normal"))
-    tutorTurtle.turtle.goto(-380,172)
-    tutorTurtle.turtle.write("PU  PD  SETPC colour", 
-                             True, align="left", font=("Courier New", 11, "normal"))
-    
-    EXAMPLE_SCRIPT = "TO square REPEAT 4 [FD 30 RT 90] END   REPEAT 10 [square RT 36]"
-    
-    tutorTurtle.turtle.goto(-395,152)
-    tutorTurtle.turtle.write("Example:", 
-                             True, align="left", font=("Arial", 12, "italic bold"))
-    tutorTurtle.turtle.goto(-380,132)
-    tutorTurtle.turtle.write(EXAMPLE_SCRIPT, 
-                             True, align="left", font=("Courier New", 10, "normal"))
-    tutorTurtle.turtle.hideturtle()
-    
-    tutorTurtle.turtle.showturtle()
-    tutorTurtle.turtle.forward(45)
-    tutorTurtle.turtle.pendown()
-    tutorTurtle.turtle.pencolor('green')
-    tutorTurtle.parse(EXAMPLE_SCRIPT)
-    tutorTurtle.turtle.hideturtle()
-
-    del tutorTurtle
-
+    draw_headings(canvas)
     
     dispatcher = Dispatcher()
     l = LoopingCall(dispatcher.dispatcher)

@@ -1,6 +1,7 @@
 from twisted.internet import reactor
+from twisted.internet.task import cooperate, LoopingCall
 
-from turtles import setup_window, TurtleContext
+from turtles import setup_window, TurtleContext, Dispatcher
 
 if __name__ == "__main__":
     canvas = setup_window("Logo140 - Leeds Hack 2012")
@@ -12,11 +13,6 @@ if __name__ == "__main__":
     tc4 = TurtleContext(canvas)
     tc5 = TurtleContext(canvas)
     
-    tcs['1'] = tc1
-    tcs['2'] = tc2
-    tcs['3'] = tc3
-    tcs['4'] = tc4
-    tcs['5'] = tc5
 
     tc6 = TurtleContext(canvas)
     tc7 = TurtleContext(canvas)
@@ -84,8 +80,8 @@ if __name__ == "__main__":
     #tc10.parse(s)
     
 
-    for tc in tcs:
-        print unicode(tcs[tc])       
+    #for tc in tcs:
+    #    print unicode(tcs[tc])       
     
     dispatcher = Dispatcher()
     l = LoopingCall(dispatcher.dispatcher)
