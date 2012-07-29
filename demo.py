@@ -12,7 +12,7 @@ if __name__ == "__main__":
     tc1.parse('setpc blue repeat 12 [repeat 75 [fd 60 bk 60 rt 2] fd 130]')  #fanflower
 
     
-    dispatcher = Dispatcher()
+    dispatcher = Dispatcher(canvas=canvas)
     l = LoopingCall(dispatcher.dispatcher)
     l.start(5.0)        
 

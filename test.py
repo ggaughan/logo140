@@ -88,9 +88,8 @@ if __name__ == "__main__":
     
     #for tc in tcs:
     #    print unicode(tcs[tc])       
-    
     #no SQS for testing
-    #dispatcher = Dispatcher()
+    #dispatcher = Dispatcher(canvas=canvas)
     #l = LoopingCall(dispatcher.dispatcher)
     #l.start(5.0)        
 
