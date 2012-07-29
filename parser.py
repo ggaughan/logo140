@@ -32,15 +32,18 @@ def p_command(p):
                | ID
     '''
     if isinstance(p[1], basestring): #ID
-        if hasattr(p.lexer, 'context'):
-            ns = p.lexer.context.namespace_lookup(p[1].lower())
-            if ns is not None:
-                p[0] = ('call', p[1].lower())  #standalone, known-name is a call  #todo we could add ns/lookup info here
-            else:
-                #todo if we're inside a TO definition with this name then allow this recursive call too
-                #- it will then be resolved ok at runtime
-                print "I don't know how to %s" % p[1]
-                raise SyntaxError("I don't know how to %s" % p[1])
+        p[0] = ('call', p[1].lower())  #standalone, name is a call  #todo we could add ns/lookup info here
+        #todo removed: we may not know now in case of recursion (or call after def in same string)
+        #              but we will at runtime
+        #if hasattr(p.lexer, 'context'):
+            #ns = p.lexer.context.namespace_lookup(p[1].lower())
+            #if ns is not None:
+                #p[0] = ('call', p[1].lower())  #standalone, known-name is a call  #todo we could add ns/lookup info here
+            #else:
+                ##todo if we're inside a TO definition with this name then allow this recursive call too
+                ##- it will then be resolved ok at runtime
+                #print "I don't know how to %s" % p[1]
+                #raise SyntaxError("I don't know how to %s" % p[1])
     else:
         p[0] = p[1]
     

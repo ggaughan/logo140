@@ -99,10 +99,16 @@ class TurtleContext(object):
         """Returns True if we are currently in a function call"""
         return len(self.stack) > 0
     
+    def reset_stacks(self):
+        self.stack.clear()
+        while len(self.namespace) > 2:
+            self.namespace.pop()
+        self.repeat_counters.clear()
+    
     def evaluate(self, expression):
         """Runtime evaluation"""
         if expression == 'repcount':
-            return self.repeat_counters[0][0]  #latest count
+            return self.repeat_counters[-1][0]  #latest count
         else:
             return expression
     
@@ -123,6 +129,8 @@ class TurtleContext(object):
                     self.turtle.right(self.evaluate(args[0]))
                 elif op == 'lt':
                     self.turtle.left(self.evaluate(args[0]))
+                elif op == 'home':
+                    self.turtle.home()
                 elif op == 'pu':
                     self.turtle.penup()
                 elif op == 'pd':
@@ -164,7 +172,10 @@ class TurtleContext(object):
                     ns = self.lexer.context.namespace_lookup(args[0])   #(assumes name is lowercased already)
                     if ns is not None:
                         if len(self.stack) > MAX_RECURSION:
-                            print "Maximum stack reached - call will be ignored (%s)" % unicode(self)
+                            print "Maximum stack reached - existing commands will terminate (%s)" % unicode(self)
+                            #also (for now) we skip all current commands
+                            self.reset_stacks()
+                            self.np = len(self.commands)
                         else:
                             self.stack.append((args[0], self.np))  #push local stack frame
                             self.namespace.append({})  #create local namespace
@@ -269,9 +280,9 @@ if __name__ == "__main__":
     tc9.turtle.left(220)
     tc10.turtle.left(190)
 
-    #note: recursive functions not implemented yet and any will be ignored
-
     #tc1.parse('to square repeat 4 [fd 50 rt 90] end')
+    ##tc1.parse('to square repeat 4 [fd 50 rt 90 square] end')   #recursive
+    ##tc1.parse('square')
     ##tc1.parse('repeat 36 [ square rt 10] ')
     #tc1.parse('to flower repeat 36 [rt 10 square] end')
     #tc1.parse('flower')  #nested function call
@@ -291,9 +302,9 @@ if __name__ == "__main__":
     #s = 'repeat 18 [repeat 5 [rt 40 fd 100 rt 120] rt 20]'
     #tc5.parse(s)
     
-    ##s = 'repeat 360 [repeat repcount [repeat repcount [fd repcount lt 15] home] lt 1]'  #growing (may want to stop before done)
+    #s = 'repeat 36 [repeat repcount [repeat repcount [fd repcount lt 15] home] lt 1]'  #growing (may want to stop before done)
     #s= 'repeat 36 [repeat 36 [fd 10 rt 10] fd repcount rt 90 fd repcount]'
-    #tc6.parse(s)
+    tc6.parse(s)
     
     #s='repeat 12 [repeat 75 [fd 100 bk 100 rt 2] fd 250]'  #fanflower
     #tc7.parse(s)
