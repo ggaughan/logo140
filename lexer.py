@@ -53,7 +53,7 @@ def t_NUMBER(t):
     return t
 
 # A string containing ignored characters (spaces and tabs)
-t_ignore  = ' \t'
+t_ignore  = ' \t\n\r'
 
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'

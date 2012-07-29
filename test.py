@@ -47,6 +47,10 @@ if __name__ == "__main__":
     #tc1.parse('flower')  #nested function call
 
     s= 'repeat 10 [REpEAT 90[fd 4 rt 4] rt 36]'  #nested repeat
+    s = """TO sawtooth  RT 45  FD 56   LT 135  FD 40  RT 90  END
+    TO sawblade REPEAT 12 [ sawtooth rt 30 ] END
+    TO eyeball REPEAT 36 [ sawblade rt 10] END
+    eyeball"""
     tc1.parse(s)
     tc2.parse(s)
     s='TO square REPEAT 4 [FD 30 RT 90] END REPEAT 10 [square RT 36]'
