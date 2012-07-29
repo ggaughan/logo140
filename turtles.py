@@ -113,6 +113,7 @@ class TurtleContext(object):
             self.np += 1
             stepping = True  #temp
             op, args = command[0], command[1:]
+            op = op.lower()  #something wrong here: fix parser!
             if op == 'fd':
                 self.turtle.forward(self.evaluate(args[0]))
             elif op == 'bk':
@@ -173,7 +174,7 @@ class TurtleContext(object):
             #todo etc.
             else:
                 #todo
-                print "Unknown command"
+                print "I don't know how to %s" % op
             #if stepping:
             #    reactor.callLater(0.00001, self.process)  #todo improve!
         #else nothing to do (until the next parse at least)
@@ -274,13 +275,13 @@ if __name__ == "__main__":
     #tc1._demo()
     #tc2._demo()   
     
-    s= 'repeat 10 [repeat 90[fd 4 rt 4] rt 36]'  #nested repeat
+    s= 'repeat 10 [REpEAT 90[fd 4 rt 4] rt 36]'  #nested repeat
     tc1.parse(s)
     tc2.parse(s)
     tc3.parse(s)
     
     #s = 'repeat 10 [ pu  fd 5 pd fd 5 ]'   #dotted
-    s = 'fd 50 setpc magenta fd 50'   
+    s = 'FD 50 setpc magenta fd 50'   
     tc4.parse(s)
     
     #s = 'repeat 18 [repeat 5 [rt 40 fd 100 rt 120] rt 20]'
