@@ -15,7 +15,7 @@ if __name__ == "__main__":
     tc1.parse('SAWBLADE')
 
     
-    dispatcher = Dispatcher()
+    dispatcher = Dispatcher(canvas=canvas)
     l = LoopingCall(dispatcher.dispatcher)
     l.start(5.0)        
 

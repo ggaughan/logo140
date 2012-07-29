@@ -275,6 +275,7 @@ def setup_window(title = "Turtles"):
 class Dispatcher(object):
 
     def __init__(self, **kwargs):
+        self.canvas = kwargs.get('canvas')
         self.sqs = boto.connect_sqs()
         
     def get_sms(self):
@@ -303,7 +304,7 @@ class Dispatcher(object):
             if turtle:
                 turtle.parse(content)
             else:
-                tc = TurtleContext(canvas)
+                tc = TurtleContext(self.canvas)
                 tc.parse(content)
                 tcs.update({sms_id: tc})
         
@@ -315,7 +316,7 @@ if __name__ == "__main__":
     canvas = setup_window("Logo140 - Leeds Hack 2012")
     draw_headings(canvas)
     
-    dispatcher = Dispatcher()
+    dispatcher = Dispatcher(canvas=canvas)
     l = LoopingCall(dispatcher.dispatcher)
     l.start(5.0)        
 
