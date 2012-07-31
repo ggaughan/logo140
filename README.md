@@ -24,7 +24,7 @@ scoping. A more complex example is:
 
 requirements
 ------------
- * sudo aptitude install python-tk package
+ * sudo aptitude install python-tk
  * pip install twisted
  * pip install ply
  * pip install boto
