@@ -10,7 +10,7 @@ would move forward 50 and then right-turn 90 degrees.
 The Logo commands are sent via Google App Engine to an Amazon queue where they 
 are picked and processed by the application. Each user gets their own turtle, 
 based on their phone number, and the application can move multiple turtles at 
-once.
+once (using a single thread to keep Tk happy).
 
 The implemented Logo language supports turtle movement, loops, named functions, 
 nested function calls and limited recursion, with local and global variable 
