@@ -4,7 +4,7 @@ logo140
 Leeds Hack 2012 entry
 
 Logo140 allows users to collaboratively draw a picture by texting Logo turtle
-commands to a central number (using mediaburst's SMS API), e.g. "FD 50 RT 90" 
+commands to a central number (using mediaburst's SMS API), e.g. `FD 50 RT 90` 
 would move forward 50 and then right-turn 90 degrees.
 
 The Logo commands are sent via Google App Engine to an Amazon queue where they 
