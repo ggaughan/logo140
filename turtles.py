@@ -282,9 +282,15 @@ class Dispatcher(object):
 
     def __init__(self, **kwargs):
         self.canvas = kwargs.get('canvas')
-        self.sqs = boto.connect_sqs()
+        self.sqs = None
+        try:
+            self.sqs = boto.connect_sqs()
+        except Exception, e:
+            print e
         
     def get_sms(self):
+        if self.sqs is None:
+            return
         m_data = []
         q = self.sqs.get_queue('logo140')
         m = q.read()
